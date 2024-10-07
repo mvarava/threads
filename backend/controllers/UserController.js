@@ -6,6 +6,7 @@ const jwt = require('jsonwebtoken');
 
 const User = require('../models/User');
 const Follow = require('../models/Follow');
+const { error } = require('console');
 
 const UserController = {
   register: async (req, res) => {
@@ -102,7 +103,47 @@ const UserController = {
     res.send('current');
   },
   updateUser: async (req, res) => {
-    res.send('updateUser');
+    const { id } = req.params;
+    const { email, name, dateOfBirth, bio, location } = req.body;
+
+    let filePath;
+
+    if (req.file && req.file.path) {
+      file.path = req.file.path;
+    }
+
+    if (id !== req.user.userId) {
+      return res.status(403).json({ error: 'No permission' });
+    }
+
+    try {
+      if (email) {
+        const existingUser = await User.findOne({ email });
+
+        if (existingUser && existingUser.id !== id) {
+          return res.status(400).json({ error: 'Email is already in use' });
+        }
+      }
+
+      const updatedUser = await User.findByIdAndUpdate(
+        id,
+        {
+          ...req.body,
+          avatarUrl: filePath ? `/${filePath}` : undefined,
+        },
+        {
+          new: true,
+          runValidators: true,
+        },
+      );
+
+      const updatedUserObj = updatedUser.toObject();
+
+      res.json(updatedUser);
+    } catch (error) {
+      console.error('Error in current: ', error);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
   },
 };
 
