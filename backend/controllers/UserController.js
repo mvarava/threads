@@ -5,6 +5,7 @@ const fs = require('fs');
 const jwt = require('jsonwebtoken');
 
 const User = require('../models/User');
+const Follow = require('../models/Follow');
 
 const UserController = {
   register: async (req, res) => {
@@ -71,11 +72,34 @@ const UserController = {
       res.status(500).json({ error: 'Internal Server Error' });
     }
   },
+  getUserById: async (req, res) => {
+    const { id } = req.params;
+    const userId = req.user.userId;
+
+    try {
+      const user = await User.findById(id);
+
+      if (!user) {
+        return res.status(404).json({
+          error: 'User not found',
+        });
+      }
+
+      const isFollowing = await Follow.findOne({
+        follower: userId,
+        following: id,
+      });
+
+      const userObj = user.toObject();
+
+      res.json({ ...userObj, isFollowing: Boolean(isFollowing) });
+    } catch (error) {
+      console.error('Error in getUserById: ', error);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  },
   current: async (req, res) => {
     res.send('current');
-  },
-  getUserById: async (req, res) => {
-    res.send('getUserById');
   },
   updateUser: async (req, res) => {
     res.send('updateUser');
