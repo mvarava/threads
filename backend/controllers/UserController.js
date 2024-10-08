@@ -91,16 +91,16 @@ const UserController = {
         following: id,
       });
 
-      const userObj = user.toObject();
+      const userResponse = user.toObject();
+      delete userResponse.password;
 
-      res.json({ ...userObj, isFollowing: Boolean(isFollowing) });
+      // const userObj = user.toObject();
+
+      res.json({ ...userResponse, isFollowing: Boolean(isFollowing) });
     } catch (error) {
       console.error('Error in getUserById: ', error);
       res.status(500).json({ error: 'Internal Server Error' });
     }
-  },
-  current: async (req, res) => {
-    res.send('current');
   },
   updateUser: async (req, res) => {
     const { id } = req.params;
@@ -137,9 +137,30 @@ const UserController = {
         },
       );
 
-      const updatedUserObj = updatedUser.toObject();
+      const userResponse = updatedUser.toObject();
+      delete userResponse.password;
 
-      res.json(updatedUser);
+      res.json(userResponse);
+    } catch (error) {
+      console.error('Error in updateUser: ', error);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  },
+  current: async (req, res) => {
+    try {
+      const userId = req.user.userId;
+
+      const user = await User.findById(userId);
+
+      if (!user) {
+        return res.status(400).json({ error: 'Failed to find such user' });
+      }
+
+      // const userObj = user.toObject();
+      const userResponse = user.toObject();
+      delete userResponse.password;
+
+      res.json(userResponse);
     } catch (error) {
       console.error('Error in current: ', error);
       res.status(500).json({ error: 'Internal Server Error' });
