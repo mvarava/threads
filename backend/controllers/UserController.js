@@ -149,7 +149,7 @@ const UserController = {
     try {
       const userId = req.user.userId;
 
-      const user = await User.findById(userId);
+      const user = await User.findById(userId).populate('posts');
 
       if (!user) {
         return res.status(400).json({ error: 'Failed to find such user' });

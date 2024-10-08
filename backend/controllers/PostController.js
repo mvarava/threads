@@ -36,7 +36,26 @@ const PostController = {
     }
   },
   getAllPosts: async (req, res) => {
-    res.send('getAllPosts');
+    const userId = req.user.userId;
+
+    try {
+      const posts = await Post.find()
+        .populate({
+          path: 'author',
+          select: '-password',
+        })
+        .sort({ createdAt: -1 });
+
+      const postWithLikeInfo = posts.map((post) => ({
+        ...post.toObject(),
+        likedByUser: post.likes.some((like) => like.equals(userId)),
+      }));
+
+      res.json(postWithLikeInfo);
+    } catch (error) {
+      console.error('Error in getAllPosts: ', error);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
   },
   getPostById: async (req, res) => {
     res.send('getPostById');
