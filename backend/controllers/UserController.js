@@ -6,7 +6,6 @@ const jwt = require('jsonwebtoken');
 
 const User = require('../models/User');
 const Follow = require('../models/Follow');
-const { error } = require('console');
 
 const UserController = {
   register: async (req, res) => {
