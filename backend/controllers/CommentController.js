@@ -3,6 +3,7 @@
 // const path = require('path');
 // const fs = require('fs');
 // const jwt = require('jsonwebtoken');
+// const mongoose = require('mongoose');
 
 const User = require('../models/User');
 const Follow = require('../models/Follow');
@@ -44,7 +45,27 @@ const CommentController = {
     }
   },
   deleteComment: async (req, res) => {
-    res.send('deleteComment');
+    const { id } = req.params;
+    const userId = req.user.userId;
+
+    try {
+      const commentToDelete = await Comment.findById(id);
+
+      if (!commentToDelete) {
+        return res.status(404).json({ error: 'Such comment was not found' });
+      }
+
+      if (!commentToDelete.user.equals(userId)) {
+        return res.status(403).json({ error: 'No permission' });
+      }
+
+      await Comment.findByIdAndDelete(id);
+
+      res.status(200).json({ message: 'Comment was deleted successfully' });
+    } catch (error) {
+      console.error('Error in deletePost: ', error);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
   },
 };
 
