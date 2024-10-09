@@ -1,12 +1,3 @@
-// const bcrypt = require('bcryptjs');
-// const JDentIcon = require('jdenticon');
-// const path = require('path');
-// const fs = require('fs');
-// const jwt = require('jsonwebtoken');
-// const mongoose = require('mongoose');
-
-const User = require('../models/User');
-const Follow = require('../models/Follow');
 const Comment = require('../models/Comment');
 const Post = require('../models/Post');
 
@@ -33,9 +24,6 @@ const CommentController = {
       });
 
       await newComment.save();
-
-      post.comments.push(newComment._id);
-      await post.save();
 
       const commentResponse = newComment.toObject();
       res.status(201).json(commentResponse);

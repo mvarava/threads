@@ -1,11 +1,5 @@
-// const bcrypt = require('bcryptjs');
-// const JDentIcon = require('jdenticon');
-// const path = require('path');
-// const fs = require('fs');
-// const jwt = require('jsonwebtoken');
 const mongoose = require('mongoose');
 
-const User = require('../models/User');
 const Post = require('../models/Post');
 const Comment = require('../models/Comment');
 const Like = require('../models/Like');
@@ -13,7 +7,6 @@ const Like = require('../models/Like');
 const PostController = {
   createPost: async (req, res) => {
     const { content } = req.body;
-
     const authorId = req.user.userId;
 
     if (!content) {
@@ -27,8 +20,6 @@ const PostController = {
       });
 
       await newPost.save();
-
-      await User.findByIdAndUpdate(authorId, { $push: { posts: newPost._id } });
 
       const postResponse = newPost.toObject();
       res.status(201).json(postResponse);
@@ -46,17 +37,28 @@ const PostController = {
           path: 'author',
           select: '-password',
         })
-        .populate({
-          path: 'comments',
-        })
         .sort({ createdAt: -1 });
 
-      const postsWithLikeInfo = posts.map((post) => ({
-        ...post.toObject(),
-        likedByUser: post.likes.some((like) => like.userId === userId),
-      }));
+      const postsWithDetails = await Promise.all(
+        posts.map(async (post) => {
+          const comments = await Comment.find({ post: post._id })
+            .populate({ path: 'user', select: '-password' })
+            .sort({ createdAt: -1 });
 
-      res.json(postsWithLikeInfo);
+          const likes = await Like.find({ post: post._id });
+
+          const isLikedByUser = likes.some((like) => like.user.equals(userId));
+
+          return {
+            ...post.toObject(),
+            comments,
+            likes,
+            isLikedByUser,
+          };
+        }),
+      );
+
+      res.json(postsWithDetails);
     } catch (error) {
       console.error('Error in getAllPosts: ', error);
       res.status(500).json({ error: 'Internal Server Error' });
@@ -67,36 +69,17 @@ const PostController = {
     const userId = req.user.userId;
 
     try {
-      const wantedPost = await Post.findById(id)
-        .populate({
-          path: 'comments',
-          populate: {
-            path: 'user',
-            select: '-password -posts -likes -comments -followers -following',
-          },
-        })
-        .populate({
-          path: 'likes',
-          populate: {
-            path: 'user',
-            select: '-password -posts -likes -comments -followers -following',
-          },
-        })
-        .populate({
-          path: 'author',
-          select: '-password -posts -likes -comments -followers -following',
-        });
+      const wantedPost = await Post.findById(id);
 
       if (!wantedPost) {
         return res.status(404).json({ error: 'Such post was not found' });
       }
 
-      const postWithLikeInfo = {
-        ...wantedPost.toObject(),
-        likedByUser: wantedPost.likes.some((like) => like.userId === userId),
-      };
+      const comments = await Comment.find({ post: id });
+      const likes = await Like.find({ post: id });
+      const isLikedByUser = likes.some((like) => like.user.equals(userId));
 
-      res.json(postWithLikeInfo);
+      res.json({ ...wantedPost.toObject(), comments, likes, isLikedByUser });
     } catch (error) {
       console.error('Error in getPostById: ', error);
       res.status(500).json({ error: 'Internal Server Error' });
@@ -121,9 +104,7 @@ const PostController = {
       session.startTransaction();
 
       await Comment.deleteMany({ post: id }).session(session);
-
       await Like.deleteMany({ post: id }).session(session);
-
       await Post.deleteOne({ _id: id }).session(session);
 
       await session.commitTransaction();

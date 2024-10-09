@@ -6,6 +6,7 @@ const jwt = require('jsonwebtoken');
 
 const User = require('../models/User');
 const Follow = require('../models/Follow');
+const Post = require('../models/Post');
 
 const UserController = {
   register: async (req, res) => {
@@ -16,7 +17,7 @@ const UserController = {
     }
 
     try {
-      const existingUser = await User.findOne({ email });
+      const existingUser = await User.findOne({ email }).select('-password');
       if (existingUser) {
         return res.status(400).json({ error: 'User with entered email already exists' });
       }
@@ -38,7 +39,6 @@ const UserController = {
       await user.save();
 
       const userResponse = user.toObject();
-      delete userResponse.password;
 
       res.status(201).json(userResponse);
     } catch (error) {
@@ -77,7 +77,7 @@ const UserController = {
     const userId = req.user.userId;
 
     try {
-      const user = await User.findById(id);
+      const user = await User.findById(id).select('-password');
 
       if (!user) {
         return res.status(404).json({
@@ -91,9 +91,6 @@ const UserController = {
       });
 
       const userResponse = user.toObject();
-      delete userResponse.password;
-
-      // const userObj = user.toObject();
 
       res.json({ ...userResponse, isFollowing: Boolean(isFollowing) });
     } catch (error) {
@@ -103,7 +100,7 @@ const UserController = {
   },
   updateUser: async (req, res) => {
     const { id } = req.params;
-    const { email, name, dateOfBirth, bio, location } = req.body;
+    const { email } = req.body;
 
     let filePath;
 
@@ -134,10 +131,9 @@ const UserController = {
           new: true,
           runValidators: true,
         },
-      );
+      ).select('-password');
 
       const userResponse = updatedUser.toObject();
-      delete userResponse.password;
 
       res.json(userResponse);
     } catch (error) {
@@ -149,17 +145,17 @@ const UserController = {
     try {
       const userId = req.user.userId;
 
-      const user = await User.findById(userId).populate('posts');
+      const user = await User.findById(userId).select('-password');
 
       if (!user) {
         return res.status(400).json({ error: 'Failed to find such user' });
       }
 
-      // const userObj = user.toObject();
-      const userResponse = user.toObject();
-      delete userResponse.password;
+      const posts = await Post.find({ author: userId }).sort({ createdAt: -1 });
 
-      res.json(userResponse);
+      const userResponse = user.toObject();
+
+      res.json({ ...userResponse, posts });
     } catch (error) {
       console.error('Error in current: ', error);
       res.status(500).json({ error: 'Internal Server Error' });
