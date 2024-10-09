@@ -49,12 +49,12 @@ const LikeController = {
       const likeToUnmake = await Like.findOne({ post: id, user: userId });
 
       if (!likeToUnmake) {
-        return res.status(400).json({ error: "You can't unlike already unliked post" });
+        return res.status(400).json({ error: "You can't unlike" });
       }
 
       await Like.findOneAndDelete({ post: id, user: userId });
 
-      res.status(200).json({ message: 'Like was deleted successfully' });
+      res.status(204).json({ message: 'Like was deleted successfully' });
     } catch (error) {
       console.error('Error in unlikePost: ', error);
       res.status(500).json({ error: 'Internal Server Error' });

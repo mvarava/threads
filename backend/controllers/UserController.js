@@ -24,7 +24,7 @@ const UserController = {
 
       const hashedPassword = await bcrypt.hash(password, 10);
 
-      const png = JDentIcon.toPng(name, 200);
+      const png = JDentIcon.toPng(`${name}${Date.now()}`, 200);
       const avatarName = `${name}_${Date.now()}.png`;
       const avatarPath = path.join(__dirname, '../uploads', avatarName);
       fs.writeFileSync(avatarPath, png);
@@ -39,6 +39,7 @@ const UserController = {
       await user.save();
 
       const userResponse = user.toObject();
+      delete userResponse.password;
 
       res.status(201).json(userResponse);
     } catch (error) {

@@ -7,6 +7,8 @@ const {
   PostController,
   CommentController,
   LikeController,
+  FollowColler,
+  FollowController,
 } = require('../controllers');
 const { authenticateToken } = require('../middleware/auth');
 
@@ -42,5 +44,9 @@ router.delete('/comments/:id', authenticateToken, CommentController.deleteCommen
 // Like routes
 router.post('/likes', authenticateToken, LikeController.likePost);
 router.delete('/likes/:id', authenticateToken, LikeController.unlikePost);
+
+// Follow routes
+router.post('/follow', authenticateToken, FollowController.followUser);
+router.delete('/unfollow', authenticateToken, FollowController.unfollowUser);
 
 module.exports = router;

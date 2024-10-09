@@ -49,7 +49,7 @@ const CommentController = {
 
       await Comment.findByIdAndDelete(id);
 
-      res.status(200).json({ message: 'Comment was deleted successfully' });
+      res.status(204).json({ message: 'Comment was deleted successfully' });
     } catch (error) {
       console.error('Error in deletePost: ', error);
       res.status(500).json({ error: 'Internal Server Error' });

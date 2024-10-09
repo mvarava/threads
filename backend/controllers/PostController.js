@@ -110,7 +110,7 @@ const PostController = {
       await session.commitTransaction();
       session.endSession();
 
-      res.status(200).json({ message: 'Post and related data was deleted successfully' });
+      res.status(204).json({ message: 'Post and related data was deleted successfully' });
     } catch (error) {
       console.error('Error in deletePost: ', error);
       res.status(500).json({ error: 'Internal Server Error' });
