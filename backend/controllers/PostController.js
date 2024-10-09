@@ -21,17 +21,16 @@ const PostController = {
     }
 
     try {
-      const post = new Post({
+      const newPost = new Post({
         content,
         author: authorId,
       });
 
-      await post.save();
-      console.log('Post saved:', post);
+      await newPost.save();
 
-      await User.findByIdAndUpdate(authorId, { $push: { posts: post._id } });
+      await User.findByIdAndUpdate(authorId, { $push: { posts: newPost._id } });
 
-      const postResponse = post.toObject();
+      const postResponse = newPost.toObject();
       res.status(201).json(postResponse);
     } catch (error) {
       console.error('Error in createPost: ', error);
@@ -46,6 +45,9 @@ const PostController = {
         .populate({
           path: 'author',
           select: '-password',
+        })
+        .populate({
+          path: 'comments',
         })
         .sort({ createdAt: -1 });
 
@@ -110,7 +112,6 @@ const PostController = {
       return res.status(404).json({ error: 'Such post was not found' });
     }
 
-    console.log(postToDelete.author);
     if (!postToDelete.author.equals(userId)) {
       return res.status(403).json({ error: 'No permission' });
     }
