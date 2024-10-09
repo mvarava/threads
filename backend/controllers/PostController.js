@@ -6,6 +6,8 @@ const jwt = require('jsonwebtoken');
 
 const User = require('../models/User');
 const Post = require('../models/Post');
+const Comment = require('../models/Comment');
+const Like = require('../models/Like');
 
 const PostController = {
   createPost: async (req, res) => {
@@ -46,19 +48,56 @@ const PostController = {
         })
         .sort({ createdAt: -1 });
 
-      const postWithLikeInfo = posts.map((post) => ({
+      const postsWithLikeInfo = posts.map((post) => ({
         ...post.toObject(),
-        likedByUser: post.likes.some((like) => like.equals(userId)),
+        likedByUser: post.likes.some((like) => like.userId === userId),
       }));
 
-      res.json(postWithLikeInfo);
+      res.json(postsWithLikeInfo);
     } catch (error) {
       console.error('Error in getAllPosts: ', error);
       res.status(500).json({ error: 'Internal Server Error' });
     }
   },
   getPostById: async (req, res) => {
-    res.send('getPostById');
+    const { id } = req.params;
+    const userId = req.user.userId;
+
+    try {
+      const wantedPost = await Post.findById(id)
+        .populate({
+          path: 'comments',
+          populate: {
+            path: 'user',
+            select: '-password -posts -likes -comments -followers -following',
+          },
+        })
+        .populate({
+          path: 'likes',
+          populate: {
+            path: 'user',
+            select: '-password -posts -likes -comments -followers -following',
+          },
+        })
+        .populate({
+          path: 'author',
+          select: '-password -posts -likes -comments -followers -following',
+        });
+
+      if (!wantedPost) {
+        return res.status(404).json({ error: 'No post found' });
+      }
+
+      const postWithLikeInfo = {
+        ...wantedPost.toObject(),
+        likedByUser: wantedPost.likes.some((like) => like.userId === userId),
+      };
+
+      res.json(postWithLikeInfo);
+    } catch (error) {
+      console.error('Error in getPostById: ', error);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
   },
   deletePost: async (req, res) => {
     res.send('deletePost');
