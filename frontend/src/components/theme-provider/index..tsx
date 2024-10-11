@@ -10,7 +10,7 @@ export const ThemeContext = React.createContext<ThemeContextType>({
   toggleTheme: () => null,
 });
 
-const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
+export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
   const storedTheme = localStorage.getItem('theme');
   const currentTheme = storedTheme ? (storedTheme as 'dark' | 'light') : 'dark';
 
@@ -30,5 +30,3 @@ const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
     </ThemeContext.Provider>
   );
 };
-
-export default ThemeProvider;
