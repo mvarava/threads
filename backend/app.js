@@ -1,18 +1,21 @@
-const createError = require('http-errors');
-const express = require('express');
-const cookieParser = require('cookie-parser');
-const logger = require('morgan');
-const fs = require('fs');
+var createError = require('http-errors');
+var express = require('express');
+var cookieParser = require('cookie-parser');
+var logger = require('morgan');
+var cors = require('cors');
+var path = require('path');
+var fs = require('fs');
 require('dotenv').config();
 
-const app = express();
+var app = express();
 
+app.use(cors());
 app.use(logger('dev'));
 app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
-app.set('view engine', 'jade');
-
+app.set('view engine', 'pug');
+// Раздавать статические файлы из папки 'uploads'
 app.use('/uploads', express.static('uploads'));
 
 app.use('/api', require('./routes'));

@@ -1,16 +1,16 @@
-import { api } from './api';
 import { User } from '../types';
+import { api } from './api';
 
-export const userApi = api.injectEndpoints({
-  endpoints: (buider) => ({
-    login: buider.mutation<{ token: string }, { email: string; password: string }>({
+export const usersApi = api.injectEndpoints({
+  endpoints: (builder) => ({
+    login: builder.mutation<{ token: string }, { email: string; password: string }>({
       query: (userData) => ({
         url: '/login',
         method: 'POST',
         body: userData,
       }),
     }),
-    register: buider.mutation<
+    register: builder.mutation<
       { email: string; password: string; name: string },
       { email: string; password: string; name: string }
     >({
@@ -20,19 +20,19 @@ export const userApi = api.injectEndpoints({
         body: userData,
       }),
     }),
-    current: buider.query<User, void>({
+    current: builder.query<User, void>({
       query: () => ({
         url: '/current',
         method: 'GET',
       }),
     }),
-    getUserById: buider.query<User, string>({
-      query: (userId) => ({
-        url: `/users/${userId}`,
+    getUserById: builder.query<User, string>({
+      query: (id) => ({
+        url: `/users/${id}`,
         method: 'GET',
       }),
     }),
-    updateUser: buider.mutation<User, { userData: FormData; id: string }>({
+    updateUser: builder.mutation<User, { userData: FormData; id: string }>({
       query: ({ userData, id }) => ({
         url: `/users/${id}`,
         method: 'PUT',
@@ -43,15 +43,15 @@ export const userApi = api.injectEndpoints({
 });
 
 export const {
-  useLoginMutation,
   useRegisterMutation,
+  useLoginMutation,
   useCurrentQuery,
   useLazyCurrentQuery,
   useGetUserByIdQuery,
   useLazyGetUserByIdQuery,
   useUpdateUserMutation,
-} = userApi;
+} = usersApi;
 
 export const {
   endpoints: { login, register, current, getUserById, updateUser },
-} = userApi;
+} = usersApi;
