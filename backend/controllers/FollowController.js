@@ -25,7 +25,7 @@ const FollowController = {
       });
       await newSubsciption.save();
 
-      res.status(201).json({ message: 'Subscribtion is successfull' });
+      res.status(201).json({ message: 'Subscription is successfull' });
     } catch (error) {
       console.error('Error in followUser: ', error);
       res.status(500).json({ error: 'Internal Server Error' });
@@ -50,7 +50,7 @@ const FollowController = {
         following: followingId,
       });
 
-      res.status(204).json({ message: 'Unsubscribtion is successfull' });
+      res.status(204).json({ message: 'Unsubscription is successfull' });
     } catch (error) {
       console.error('Error in unfollowUser: ', error);
       res.status(500).json({ error: 'Internal Server Error' });
