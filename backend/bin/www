@@ -40,14 +40,11 @@ db.on('error', (error) => {
 });
 
 db.once('open', () => {
-  console.log('Seccessfully connected to MongoDB');
+  console.log('Successfully connected to MongoDB');
+  server.listen(port);
+  server.on('error', onError);
+  server.on('listening', onListening);
 });
-/**
- * Listen on provided port, on all network interfaces.
- */
-server.listen(port);
-server.on('error', onError);
-server.on('listening', onListening);
 
 /**
  * Normalize a port into a number, string, or false.

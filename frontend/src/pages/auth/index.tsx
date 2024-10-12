@@ -1,8 +1,10 @@
-import { Card, CardBody, Tab, Tabs } from '@nextui-org/react';
-import { useState } from 'react';
-import { Login } from '../../features/login';
+import React, { useState } from 'react';
 
-export const Auth = () => {
+import { Card, CardBody, Tab, Tabs } from '@nextui-org/react';
+import { Login } from '../../features/user/login';
+import { Register } from '../../features/user/register';
+
+export const Auth: React.FC = () => {
   const [selected, setSelected] = useState('login');
 
   return (
@@ -19,7 +21,7 @@ export const Auth = () => {
                 <Login setSelected={setSelected} />
               </Tab>
               <Tab key="sign-up" title="Sing Up">
-                <div>Sing Up</div>
+                <Register setSelected={setSelected} />
               </Tab>
             </Tabs>
           </CardBody>
