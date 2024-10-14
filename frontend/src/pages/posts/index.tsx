@@ -1,27 +1,26 @@
-import React from 'react';
-import { useGetAllPostsQuery } from '../../app/services/postsApi';
-import { CreatePost } from '../../components/create-post';
 import { Card } from '../../components/card';
+import { CreatePost } from '../../components/create-post';
+import { useGetAllPostsQuery } from '../../app/services/postsApi';
 
 export const Posts = () => {
   const { data } = useGetAllPostsQuery();
 
   return (
     <>
-      <div className="mb-10 w-full">
+      <div className="mb-10 w-full flex">
         <CreatePost />
       </div>
       {data && data.length > 0
-        ? data.map(({ id, content, author, likedByUser, createdAt, likes, comments }) => (
+        ? data.map(({ content, author, _id, comments, likes, likedByUser, createdAt }) => (
             <Card
-              key={id}
+              key={_id}
               avatarUrl={author.avatarUrl ?? ''}
               content={content}
               name={author.name ?? ''}
               likesCount={likes.length}
               commentsCount={comments.length}
               authorId={author._id}
-              id={id}
+              id={_id}
               likedByUser={likedByUser}
               createdAt={createdAt}
               cardFor="post"

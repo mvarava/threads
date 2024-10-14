@@ -13,7 +13,7 @@ export type User = {
 };
 
 export type Post = {
-  id: string;
+  _id: string;
   content: string;
   author: User;
   likedByUser: boolean;
@@ -23,7 +23,7 @@ export type Post = {
 };
 
 export type Comment = {
-  id: string;
+  _id: string;
   content: string;
   user: User;
   post: Post;
@@ -31,13 +31,13 @@ export type Comment = {
 };
 
 export type Like = {
-  id: string;
+  _id: string;
   user: User;
   post: Post;
 };
 
 export type Follow = {
-  id: string;
+  _id: string;
   follower: User;
   following: User;
 };
