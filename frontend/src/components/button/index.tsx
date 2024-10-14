@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button as NextButton } from '@nextui-org/react';
+import { Button as NextUIButton } from '@nextui-org/react';
 
 type Props = {
   children: React.ReactNode;
@@ -12,7 +12,7 @@ type Props = {
 
 export const Button: React.FC<Props> = ({ children, icon, className, type, fullWidth, color }) => {
   return (
-    <NextButton
+    <NextUIButton
       startContent={icon}
       size="lg"
       color={color}
@@ -21,6 +21,6 @@ export const Button: React.FC<Props> = ({ children, icon, className, type, fullW
       type={type}
       fullWidth={fullWidth}>
       {children}
-    </NextButton>
+    </NextUIButton>
   );
 };

@@ -1,5 +1,5 @@
 export type User = {
-  id: string;
+  _id: string;
   email: string;
   password: string;
   name?: string;
@@ -17,7 +17,9 @@ export type Post = {
   content: string;
   author: User;
   likedByUser: boolean;
-  createdAt?: Date;
+  createdAt: Date;
+  likes: Like[];
+  comments: Comment[];
 };
 
 export type Comment = {
