@@ -108,7 +108,7 @@ export const Card = ({
     try {
       isLikedByUser ? await unlikePost(id).unwrap() : await likePost({ postId: id }).unwrap();
 
-      await refetchPosts();
+      await triggerGetPostById(id).unwrap();
     } catch (err) {
       if (hasErrorField(err)) {
         setError(err.data.error);

@@ -34,21 +34,18 @@ export const CurrentPost = () => {
       </div>
       <div className="mt-10">
         {data.comments
-          ? data.comments.map((comment) => {
-              console.log('comment ', comment);
-              return (
-                <Card
-                  key={comment._id}
-                  avatarUrl={comment.user.avatarUrl ?? ''}
-                  name={comment.user.name ?? ''}
-                  content={comment.content}
-                  authorId={comment.user._id}
-                  id={_id}
-                  cardFor="comment"
-                  commentId={comment._id}
-                />
-              );
-            })
+          ? data.comments.map((comment) => (
+              <Card
+                key={comment._id}
+                avatarUrl={comment.user.avatarUrl ?? ''}
+                name={comment.user.name ?? ''}
+                content={comment.content}
+                authorId={comment.user._id}
+                id={_id}
+                cardFor="comment"
+                commentId={comment._id}
+              />
+            ))
           : null}
       </div>
     </>
