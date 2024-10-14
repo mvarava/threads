@@ -140,9 +140,11 @@ export const Card = ({
           </div>
         )}
       </CardHeader>
-      <CardBody className="px-3 py-2 mb-5">
-        <Typography>{content}</Typography>
-      </CardBody>
+      <Link to={`/posts/${id}`}>
+        <CardBody className="px-3 py-2 mb-5">
+          <Typography>{content}</Typography>
+        </CardBody>
+      </Link>
       {cardFor !== 'comment' && (
         <CardFooter className="gap-3">
           <div className="flex gap-5 items-center">

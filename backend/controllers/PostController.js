@@ -69,7 +69,10 @@ const PostController = {
     const userId = req.user.userId;
 
     try {
-      const wantedPost = await Post.findById(id);
+      const wantedPost = await Post.findById(id).populate({
+        path: 'author',
+        select: '-password',
+      });
 
       if (!wantedPost) {
         return res.status(404).json({ error: 'Such post was not found' });
