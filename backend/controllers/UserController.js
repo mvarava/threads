@@ -91,9 +91,12 @@ const UserController = {
         following: id,
       });
 
+      const followers = await Follow.find({ following: id });
+      const following = await Follow.find({ follower: id });
+
       const userResponse = user.toObject();
 
-      res.json({ ...userResponse, isFollowing: Boolean(isFollowing) });
+      res.json({ ...userResponse, isFollowing: Boolean(isFollowing), followers, following });
     } catch (error) {
       console.error('Error in getUserById: ', error);
       res.status(500).json({ error: 'Internal Server Error' });
@@ -153,10 +156,12 @@ const UserController = {
       }
 
       const posts = await Post.find({ author: userId }).sort({ createdAt: -1 });
+      const followers = await Follow.find({ following: userId });
+      const following = await Follow.find({ follower: userId });
 
-      const userResponse = user.toObject();
+      const userResponse = user.toObject({ following: userId });
 
-      res.json({ ...userResponse, posts });
+      res.json({ ...userResponse, posts, followers, following });
     } catch (error) {
       console.error('Error in current: ', error);
       res.status(500).json({ error: 'Internal Server Error' });

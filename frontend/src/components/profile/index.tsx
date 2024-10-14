@@ -13,7 +13,7 @@ export const Profile = () => {
     return null;
   }
 
-  const { name, email, avatarUrl, id } = current;
+  const { name, email, avatarUrl, _id } = current;
 
   return (
     <Card className="py-4 w-[302px]">
@@ -26,7 +26,7 @@ export const Profile = () => {
         />
       </CardHeader>
       <CardBody>
-        <Link to={`/users/${id}`}>
+        <Link to={`/users/${_id}`}>
           <h4 className="font-bold text-large mb-2">{name}</h4>
         </Link>
         <p className="text-default-500 flex items-center gap-2">

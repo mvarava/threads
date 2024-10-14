@@ -10,6 +10,8 @@ export type User = {
   bio?: string;
   location?: string;
   isFollowing?: boolean;
+  followers: Follow[];
+  following: Follow[];
 };
 
 export type Post = {
