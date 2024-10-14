@@ -8,12 +8,13 @@ import { NextUIProvider } from '@nextui-org/react';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { ThemeProvider } from './components/theme-provider/index.';
 import { Auth } from './pages/auth';
-import { Layout } from './components/theme-provider/layout';
+import { Layout } from './components/layout';
 import { Posts } from './pages/posts';
 import { CurrentPost } from './pages/current-post';
 import { UserProfile } from './pages/user-profile';
 import { Followers } from './pages/followers';
 import { Following } from './pages/following';
+import { AuthGuard } from './features/user/auth-guard';
 
 const container = document.getElementById('root');
 
@@ -43,7 +44,9 @@ if (container) {
       <Provider store={store}>
         <NextUIProvider>
           <ThemeProvider>
-            <RouterProvider router={router} />
+            <AuthGuard>
+              <RouterProvider router={router} />
+            </AuthGuard>
           </ThemeProvider>
         </NextUIProvider>
       </Provider>
