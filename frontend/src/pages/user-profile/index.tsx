@@ -38,6 +38,19 @@ export const UserProfile = () => {
     return null;
   }
 
+  const handleFollow = async () => {
+    try {
+      if (id) {
+        data?.isFollowing
+          ? await unfollowUser(id).unwrap()
+          : await followUser({ followingId: id }).unwrap();
+
+        await triggerGetUserById(id);
+        await triggerCurrent();
+      }
+    } catch (error) {}
+  };
+
   return (
     <>
       <GoBack />
@@ -57,6 +70,7 @@ export const UserProfile = () => {
                 color={data?.isFollowing ? 'default' : 'primary'}
                 variant="flat"
                 className="gap-2"
+                onClick={handleFollow}
                 endContent={
                   data?.isFollowing ? <MdOutlinePersonAddDisabled /> : <MdOutlinePersonAddAlt1 />
                 }>

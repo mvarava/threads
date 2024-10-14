@@ -109,11 +109,11 @@ export const Card = ({
       isLikedByUser ? await unlikePost(id).unwrap() : await likePost({ postId: id }).unwrap();
 
       await triggerGetPostById(id).unwrap();
-    } catch (err) {
-      if (hasErrorField(err)) {
-        setError(err.data.error);
+    } catch (error) {
+      if (hasErrorField(error)) {
+        setError(error.data.error);
       } else {
-        setError(err as string);
+        setError(error as string);
       }
     }
   };
