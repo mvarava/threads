@@ -16,7 +16,7 @@ export type Post = {
   _id: string;
   content: string;
   author: User;
-  likedByUser: boolean;
+  isLikedByUser: boolean;
   createdAt: Date;
   likes: Like[];
   comments: Comment[];

@@ -1,24 +1,25 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useState } from 'react';
+import { Card as NextUiCard, CardHeader, CardBody, CardFooter } from '@nextui-org/react';
 import { useSelector } from 'react-redux';
-import { CardBody, CardFooter, CardHeader, Card as NextUICard, Spinner } from '@nextui-org/react';
-import { RiDeleteBinLine } from 'react-icons/ri';
+import { Link, useNavigate } from 'react-router-dom';
+import { FaRegComment } from 'react-icons/fa6';
 import { FcDislike } from 'react-icons/fc';
-import { FaRegComment } from 'react-icons/fa';
+import { MdOutlineFavoriteBorder } from 'react-icons/md';
+import { RiDeleteBinLine } from 'react-icons/ri';
 
-import { useLikePostMutation, useUnlikePostMutation } from '../../app/services/likesApi';
+import { MetaInfo } from '../meta-info';
+import { Typography } from '../typography';
+import { User } from '../user';
+import { useUnlikePostMutation, useLikePostMutation } from '../../app/services/likesApi';
 import {
   useDeletePostMutation,
   useLazyGetAllPostsQuery,
   useLazyGetPostByIdQuery,
 } from '../../app/services/postsApi';
-import { useDeleteCommentMutation } from '../../app/services/commentsApi';
-import { selectCurrent } from '../../features/user/userSlice';
-import { User } from '../user';
 import { formatToClientDate } from '../../utils/format-to-client-date';
-import { Typography } from '../typography';
-import { MetaInfo } from '../meta-info';
-import { MdOutlineFavoriteBorder } from 'react-icons/md';
+import { selectCurrent } from '../../features/user/userSlice';
+import { useDeleteCommentMutation } from '../../app/services/commentsApi';
+import { Spinner } from '@nextui-org/react';
 import { ErrorMessage } from '../error-message';
 import { hasErrorField } from '../../utils/has-error-field';
 
@@ -30,35 +31,33 @@ type Props = {
   commentId?: string;
   likesCount?: number;
   commentsCount?: number;
-  createdAt: Date;
+  createdAt?: Date;
   id?: string;
   cardFor: 'comment' | 'post' | 'current-post';
-  likedByUser: boolean;
+  isLikedByUser?: boolean;
 };
 
-export const Card: React.FC<Props> = ({
+export const Card = ({
   avatarUrl = '',
   name = '',
-  authorId = '',
   content = '',
-  commentId = '',
+  authorId = '',
+  id = '',
   likesCount = 0,
   commentsCount = 0,
-  createdAt,
-  id = '',
   cardFor = 'post',
-  likedByUser = false,
-}) => {
+  isLikedByUser = false,
+  createdAt,
+  commentId = '',
+}: Props) => {
   const [likePost] = useLikePostMutation();
   const [unlikePost] = useUnlikePostMutation();
   const [triggerGetAllPosts] = useLazyGetAllPostsQuery();
   const [triggerGetPostById] = useLazyGetPostByIdQuery();
   const [deletePost, deletePostStatus] = useDeletePostMutation();
   const [deleteComment, deleteCommentStatus] = useDeleteCommentMutation();
-
   const [error, setError] = useState('');
   const navigate = useNavigate();
-
   const currentUser = useSelector(selectCurrent);
 
   const refetchPosts = async () => {
@@ -105,13 +104,28 @@ export const Card: React.FC<Props> = ({
     }
   };
 
+  const handleClick = async () => {
+    try {
+      console.log(isLikedByUser);
+      isLikedByUser ? await unlikePost(id).unwrap() : await likePost({ postId: id }).unwrap();
+
+      await refetchPosts();
+    } catch (err) {
+      if (hasErrorField(err)) {
+        setError(err.data.error);
+      } else {
+        setError(err as string);
+      }
+    }
+  };
+
   return (
-    <NextUICard className="mb-5">
+    <NextUiCard className="mb-5">
       <CardHeader className="justify-between items-center bg-transparent">
-        <Link to={`/users${authorId}`}>
+        <Link to={`/users/${authorId}`}>
           <User
             name={name}
-            className="text-small font-semibold leading-non text-default-600"
+            className="text-small font-semibold leading-none text-default-600"
             avatarUrl={avatarUrl}
             description={createdAt && formatToClientDate(createdAt)}
           />
@@ -132,10 +146,10 @@ export const Card: React.FC<Props> = ({
       {cardFor !== 'comment' && (
         <CardFooter className="gap-3">
           <div className="flex gap-5 items-center">
-            <div>
+            <div onClick={handleClick}>
               <MetaInfo
                 count={likesCount}
-                Icon={likedByUser ? FcDislike : MdOutlineFavoriteBorder}
+                Icon={isLikedByUser ? FcDislike : MdOutlineFavoriteBorder}
               />
             </div>
             <Link to={`/posts/${id}`}>
@@ -145,6 +159,6 @@ export const Card: React.FC<Props> = ({
           <ErrorMessage error={error} />
         </CardFooter>
       )}
-    </NextUICard>
+    </NextUiCard>
   );
 };
