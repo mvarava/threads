@@ -5,6 +5,7 @@ import { Outlet, useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { selectIsAuthenticated, selectUser } from '../../features/user/userSlice';
 import { useEffect } from 'react';
+import { Profile } from '../profile';
 
 export const Layout = () => {
   const isAuthenticated = useSelector(selectIsAuthenticated);
@@ -26,6 +27,9 @@ export const Layout = () => {
         </div>
         <div className="flex-1 p-4">
           <Outlet />
+        </div>
+        <div className="flex-2 p-4">
+          <div className="flex-col flex-gat-5">{!user && <Profile />}</div>
         </div>
       </Container>
     </>
