@@ -106,7 +106,6 @@ export const Card = ({
 
   const handleClick = async () => {
     try {
-      console.log(isLikedByUser);
       isLikedByUser ? await unlikePost(id).unwrap() : await likePost({ postId: id }).unwrap();
 
       await refetchPosts();

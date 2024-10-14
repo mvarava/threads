@@ -26,7 +26,7 @@ export type Comment = {
   _id: string;
   content: string;
   user: User;
-  post: Post;
+  postId: Post;
   createdAt?: Date;
 };
 

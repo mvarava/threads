@@ -78,7 +78,10 @@ const PostController = {
         return res.status(404).json({ error: 'Such post was not found' });
       }
 
-      const comments = await Comment.find({ post: id });
+      const comments = await Comment.find({ post: id }).populate({
+        path: 'user',
+        select: '-password',
+      });
       const likes = await Like.find({ post: id });
       const isLikedByUser = likes.some((like) => like.user.equals(userId));
 
