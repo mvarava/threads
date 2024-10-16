@@ -35,10 +35,6 @@ export const UserProfile = () => {
     dispatch(resetUser());
   }, []);
 
-  if (!data) {
-    return null;
-  }
-
   const handleFollow = async () => {
     try {
       if (id) {
@@ -52,6 +48,22 @@ export const UserProfile = () => {
     } catch (error) {}
   };
 
+  const handleClose = async () => {
+    try {
+      if (id) {
+        await triggerGetUserById(id);
+        await triggerCurrent();
+        onClose();
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  if (!data) {
+    return null;
+  }
+
   return (
     <>
       <GoBack />
@@ -61,7 +73,7 @@ export const UserProfile = () => {
             src={`${BASE_URL}${data.avatarUrl}`}
             alt={data.name}
             width={200}
-            height={200}
+            height={265}
             className="border-4 border-white"
           />
           <div className="flex flex-col text-2xl font-bold gap-4 items-center">
@@ -96,7 +108,7 @@ export const UserProfile = () => {
           </div>
         </Card>
       </div>
-      <EditProfile isOpen={isOpen} onClose={onClose} user={data} />
+      <EditProfile isOpen={isOpen} onClose={handleClose} user={data} />
     </>
   );
 };

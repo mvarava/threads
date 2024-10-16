@@ -7,7 +7,6 @@ const {
   PostController,
   CommentController,
   LikeController,
-  FollowColler,
   FollowController,
 } = require('../controllers');
 const { authenticateToken } = require('../middleware/auth');
@@ -29,7 +28,7 @@ router.post('/register', UserController.register);
 router.post('/login', UserController.login);
 router.get('/users/:id', authenticateToken, UserController.getUserById);
 router.get('/current', authenticateToken, UserController.current);
-router.put('/users/:id', authenticateToken, UserController.updateUser);
+router.put('/users/:id', authenticateToken, uploads.single('avatar'), UserController.updateUser);
 
 // Post routes
 router.post('/posts', authenticateToken, PostController.createPost);

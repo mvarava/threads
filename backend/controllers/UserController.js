@@ -131,7 +131,7 @@ const UserController = {
     let filePath;
 
     if (req.file && req.file.path) {
-      file.path = req.file.path;
+      filePath = req.file.path;
     }
 
     if (id !== req.user.userId) {
