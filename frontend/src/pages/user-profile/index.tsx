@@ -42,7 +42,7 @@ export const UserProfile = () => {
     try {
       if (id) {
         data?.isFollowing
-          ? await unfollowUser(id).unwrap()
+          ? await unfollowUser({ followingId: id }).unwrap()
           : await followUser({ followingId: id }).unwrap();
 
         await triggerGetUserById(id);
