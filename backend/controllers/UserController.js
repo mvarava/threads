@@ -102,6 +102,28 @@ const UserController = {
       res.status(500).json({ error: 'Internal Server Error' });
     }
   },
+  current: async (req, res) => {
+    try {
+      const userId = req.user.userId;
+
+      const user = await User.findById(userId).select('-password');
+
+      if (!user) {
+        return res.status(400).json({ error: 'Failed to find such user' });
+      }
+
+      const posts = await Post.find({ author: userId }).sort({ createdAt: -1 });
+      const followers = await Follow.find({ following: userId }).populate({ path: 'follower' });
+      const following = await Follow.find({ follower: userId }).populate({ path: 'following' });
+
+      const userResponse = user.toObject({ following: userId });
+
+      res.json({ ...userResponse, posts, followers, following });
+    } catch (error) {
+      console.error('Error in current: ', error);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  },
   updateUser: async (req, res) => {
     const { id } = req.params;
     const { email } = req.body;
@@ -142,28 +164,6 @@ const UserController = {
       res.json(userResponse);
     } catch (error) {
       console.error('Error in updateUser: ', error);
-      res.status(500).json({ error: 'Internal Server Error' });
-    }
-  },
-  current: async (req, res) => {
-    try {
-      const userId = req.user.userId;
-
-      const user = await User.findById(userId).select('-password');
-
-      if (!user) {
-        return res.status(400).json({ error: 'Failed to find such user' });
-      }
-
-      const posts = await Post.find({ author: userId }).sort({ createdAt: -1 });
-      const followers = await Follow.find({ following: userId });
-      const following = await Follow.find({ follower: userId });
-
-      const userResponse = user.toObject({ following: userId });
-
-      res.json({ ...userResponse, posts, followers, following });
-    } catch (error) {
-      console.error('Error in current: ', error);
       res.status(500).json({ error: 'Internal Server Error' });
     }
   },
